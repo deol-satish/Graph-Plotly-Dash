@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center; /* Center horizontally */
+            align-items: center;    /* Center vertically */
+            min-height: 100vh;      /* Take full viewport height */
+            margin: 0;
+            background-color: #f0f0f0; /* Optional: light background */
+        }
+        .bokeh-app-wrapper {
+            text-align: center; /* Center content within the wrapper */
+        }
+    </style>
+</head>
+<body>
+    <div class="bokeh-app-wrapper">
+        {{ app_root }}
+    </div>
+</body>
+</html>
