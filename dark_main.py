@@ -33,38 +33,51 @@ dark_background = "#1e1e1e"
 text_color = "#ffffff"
 accent_color = "#0d6efd"
 
-app.layout = html.Div(style={"backgroundColor": dark_background, "color": text_color, "padding": "20px"}, children=[
-    html.H2("Impact of L4S in Starlink Network - Smoothed RTT and Throughput", style={"textAlign": "center"}),
+app.layout = html.Div(
+    style={"backgroundColor": dark_background, "color": text_color, "padding": "20px"},
+    children=[
+        html.H2("Impact of L4S in Starlink Network - Smoothed RTT and Throughput", style={"textAlign": "center"}),
 
-    dcc.Dropdown(
-    id='metric-type',
-    options=[
-        {'label': 'RTT', 'value': 'RTT'},
-        {'label': 'Throughput', 'value': 'Throughput (Mbit/s)'}
-    ],
-    value='RTT',
-    clearable=False,
-    style={
-        'width': '300px',
-        'margin': 'auto',
-        'backgroundColor': "#f0f0f0",
-        'color': "#0b0b0b",
-        'border': '1px solid #444'
-    }),
+        dcc.Dropdown(
+            id='metric-type',
+            options=[
+                {'label': 'RTT', 'value': 'RTT'},
+                {'label': 'Throughput', 'value': 'Throughput (Mbit/s)'}
+            ],
+            value='RTT',
+            clearable=False,
+            style={
+                'width': '300px',
+                'margin': 'auto',
+                'backgroundColor': "#f0f0f0",
+                'color': "#0b0b0b",
+                'border': '1px solid #444'
+            }
+        ),
 
+        html.Div([
+            dcc.Graph(
+                id="comparison-graph",
+                config={'displayModeBar': False},
+                style={"width": "60%", "height": "100%"}
+            ),
+            html.Div([
+                html.H4("Starlink Satellite Scenario Visualization", style={"textAlign": "center", "marginBottom": "10px"}),
+                html.Video(
+                    controls=True,
+                    src="/static/input.mp4",
+                    style={"width": "100%", "height": "auto", "border": "1px solid #444"}
+                )
+            ], style={"width": "40%", "paddingLeft": "20px"})
+        ], style={
+            "display": "flex",
+            "justifyContent": "center",
+            "alignItems": "center",
+            "marginTop": "30px"
+        })
+    ]
+)
 
-    dcc.Graph(id="comparison-graph", config={'displayModeBar': False}),
-
-    html.H2("Starlink Satellite Scenario Visualization", style={"textAlign": "center", "marginTop": "10px"}),
-
-    html.Div([
-        html.Video(
-            controls=True,
-            src="/static/input.mp4",
-            style={"width": "854px", "height": "480px"}
-        )
-    ], style={"textAlign": "center", "marginTop": "10px"})
-])
 
 # ---- Step 4: Callback ----
 @app.callback(
