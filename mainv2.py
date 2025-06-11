@@ -117,31 +117,52 @@ app.layout = html.Div([
     html.Div([
         # Graph Box
         html.Div([
+            html.Div("RTT / Throughput / Packet Loss Graph", style={
+                "textAlign": "center",
+                "backgroundColor": "#3498db",
+                "color": "white",
+                "padding": "10px",
+                "borderTopLeftRadius": "10px",
+                "borderTopRightRadius": "10px",
+                "fontWeight": "bold",
+                "fontSize": "16px"
+            }),
             dcc.Graph(id="comparison-graph", style={"height": "500px"})
         ], style={
             "backgroundColor": "#ffffff",
-            "padding": "5px",
-            "borderRadius": "5px",
+            "borderRadius": "10px",
             "boxShadow": "0 4px 12px rgba(0, 0, 0, 0.1)",
-            "width": "70%",
-            "marginRight": "5px"
+            "width": "60%",
+            "marginRight": "20px",
+            "overflow": "hidden"
         }),
+
 
         # Video Box
         html.Div([
-            html.H4("Starlink Satellite Scenario Visualization", style={"textAlign": "center", "marginBottom": "10px"}),
+            html.Div("Starlink Satellite Scenario Visualization", style={
+                "textAlign": "center",
+                "backgroundColor": "#2ecc71",
+                "color": "white",
+                "padding": "10px",
+                "borderTopLeftRadius": "10px",
+                "borderTopRightRadius": "10px",
+                "fontWeight": "bold",
+                "fontSize": "16px"
+            }),
             html.Video(
                 controls=True,
                 src="/static/starlink_viz.mp4",
-                style={"width": "100%", "height": "auto", "borderRadius": "8px"}
+                style={"width": "100%", "height": "auto", "borderBottomLeftRadius": "8px", "borderBottomRightRadius": "8px"}
             )
         ], style={
             "backgroundColor": "#f2f3f4",
-            "padding": "20px",
             "borderRadius": "10px",
             "boxShadow": "0 4px 12px rgba(0, 0, 0, 0.1)",
-            "width": "40%"
-        })
+            "width": "40%",
+            "overflow": "hidden"
+        }),
+
     ], style={
         "display": "flex",
         "justifyContent": "center",
