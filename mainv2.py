@@ -46,34 +46,116 @@ loss_paths = {
 app = dash.Dash(__name__)
 app.title = "RTT, Throughput, and Packet Loss Comparison"
 
+# app.layout = html.Div([
+#     html.H2("Impact of L4S in Starlink Network - Smoothed RTT, Throughput, and Packet Loss", style={"textAlign": "center"}),
+
+#     dcc.Dropdown(
+#         id='metric-type',
+#         options=[
+#             {'label': 'RTT', 'value': 'RTT'},
+#             {'label': 'Throughput', 'value': 'Throughput (Mbit/s)'},
+#             {'label': 'Packet Loss', 'value': 'Lost_Packets'} # Added Loss option
+#         ],
+#         value='RTT',
+#         clearable=False,
+#         style={'width': '300px', 'margin': 'auto'}
+#     ),
+
+#     html.Div([
+#         dcc.Graph(id="comparison-graph", style={"width": "60%", "height": "100%"}),
+
+#         html.Div([
+#             html.H4("Starlink Satellite Scenario Visualization", style={"textAlign": "center"}),
+#             html.Video(
+#                 controls=True,
+#                 src="/static/starlink_viz.mp4",
+#                 style={"width": "100%", "height": "auto"}
+#             )
+#         ], style={"width": "40%", "paddingLeft": "20px"})
+#     ], style={"display": "flex", "justifyContent": "center", "alignItems": "center", "marginTop": "30px"})
+# ])
+
+
 app.layout = html.Div([
-    html.H2("Impact of L4S in Starlink Network - Smoothed RTT, Throughput, and Packet Loss", style={"textAlign": "center"}),
-
-    dcc.Dropdown(
-        id='metric-type',
-        options=[
-            {'label': 'RTT', 'value': 'RTT'},
-            {'label': 'Throughput', 'value': 'Throughput (Mbit/s)'},
-            {'label': 'Packet Loss', 'value': 'Lost_Packets'} # Added Loss option
-        ],
-        value='RTT',
-        clearable=False,
-        style={'width': '300px', 'margin': 'auto'}
-    ),
-
+    # Title Card
     html.Div([
-        dcc.Graph(id="comparison-graph", style={"width": "60%", "height": "100%"}),
+        html.H2(
+            "Impact of L4S in Starlink Network - Smoothed RTT, Throughput, and Packet Loss",
+            style={"textAlign": "center", "color": "white", "margin": "0"}
+        )
+    ], style={
+        "backgroundColor": "#2c3e50",
+        "padding": "20px",
+        "borderRadius": "12px",
+        "boxShadow": "0 4px 10px rgba(0, 0, 0, 0.3)",
+        "marginBottom": "20px"
+    }),
 
+    # Dropdown Container
+    html.Div([
+        dcc.Dropdown(
+            id='metric-type',
+            options=[
+                {'label': 'RTT', 'value': 'RTT'},
+                {'label': 'Throughput', 'value': 'Throughput (Mbit/s)'},
+                {'label': 'Packet Loss', 'value': 'Lost_Packets'}
+            ],
+            value='RTT',
+            clearable=False,
+            style={'width': '300px', 'margin': '0 auto'}
+        )
+    ], style={
+        "backgroundColor": "#ecf0f1",
+        "padding": "15px",
+        "borderRadius": "10px",
+        "margin": "0 auto 20px auto",
+        "width": "fit-content",
+        "boxShadow": "0 2px 6px rgba(0, 0, 0, 0.1)"
+    }),
+
+    # Graph + Video Container
+    html.Div([
+        # Graph Box
         html.Div([
-            html.H4("Starlink Satellite Scenario Visualization", style={"textAlign": "center"}),
+            dcc.Graph(id="comparison-graph", style={"height": "500px"})
+        ], style={
+            "backgroundColor": "#ffffff",
+            "padding": "5px",
+            "borderRadius": "5px",
+            "boxShadow": "0 4px 12px rgba(0, 0, 0, 0.1)",
+            "width": "70%",
+            "marginRight": "5px"
+        }),
+
+        # Video Box
+        html.Div([
+            html.H4("Starlink Satellite Scenario Visualization", style={"textAlign": "center", "marginBottom": "10px"}),
             html.Video(
                 controls=True,
                 src="/static/starlink_viz.mp4",
-                style={"width": "100%", "height": "auto"}
+                style={"width": "100%", "height": "auto", "borderRadius": "8px"}
             )
-        ], style={"width": "40%", "paddingLeft": "20px"})
-    ], style={"display": "flex", "justifyContent": "center", "alignItems": "center", "marginTop": "30px"})
-])
+        ], style={
+            "backgroundColor": "#f2f3f4",
+            "padding": "20px",
+            "borderRadius": "10px",
+            "boxShadow": "0 4px 12px rgba(0, 0, 0, 0.1)",
+            "width": "40%"
+        })
+    ], style={
+        "display": "flex",
+        "justifyContent": "center",
+        "alignItems": "flex-start",
+        "marginTop": "30px",
+        "gap": "20px"
+    })
+], style={
+    "fontFamily": "Segoe UI, sans-serif",
+    "padding": "30px",
+    "backgroundColor": "#f7f9fb",
+    "minHeight": "100vh"
+})
+
 
 
 # ---- Step 4: Callback ----
