@@ -1,133 +1,116 @@
+import dash
+from dash import dcc, html, Input, Output
+import plotly.express as px
 import pandas as pd
 import numpy as np
-from bokeh.plotting import figure, curdoc
-from bokeh.models import ColumnDataSource, Select, Legend, Div
-from bokeh.layouts import column, row, Spacer
-from bokeh.palettes import Category10
-from bokeh.models import HoverTool
 
-# --- Step 1: Load or simulate data ---
-time = pd.date_range("2025-01-01", periods=100, freq="s")
+# ---- Step 1: Assume the following DataFrames are already defined ----
+# Each DataFrame contains "Time" and either "SmoothedRTT" or "Throughput (Mbit/s)"
 
-# Replace these with real CSVs
-# Make sure 'UDP-Prague.csv', 'Cubic.csv', and 'Baseline_Propagation_Delay.csv' exist
-# For demonstration, I'll create dummy CSVs if they don't exist
-try:
-    utf = pd.read_csv('UDP-Prague.csv')
-except FileNotFoundError:
-    print("UDP-Prague.csv not found, creating dummy data.")
-    utf = pd.DataFrame({"Time": np.arange(100), "SmoothedRTT": np.random.uniform(5, 50, 100)})
+# Example dummy DataFrames (replace with your real ones)
+# Replace these with: tfcubic, utf, baseline_propagation_delay_df, baseline_Throuhgput_df
 
-try:
-    tfcubic = pd.read_csv('Cubic.csv')
-except FileNotFoundError:
-    print("Cubic.csv not found, creating dummy data.")
-    tfcubic = pd.DataFrame({"Time": np.arange(100), "SmoothedRTT": np.random.uniform(10, 60, 100)})
+utf_rtt = pd.read_csv('./graph_data/udp_prague_rtt.csv')
+tfcubic_rtt = pd.read_csv('./graph_data/cubic_rtt.csv')
+baseline_propagation_delay_df = pd.read_csv('./graph_data/baseline_propagation_delay_df.csv')
 
-try:
-    baseline_propagation_delay_df = pd.read_csv('Baseline_Propagation_Delay.csv')
-except FileNotFoundError:
-    print("Baseline_Propagation_Delay.csv not found, creating dummy data.")
-    baseline_propagation_delay_df = pd.DataFrame({"Time": np.arange(100), "SmoothedRTT": np.random.uniform(1, 10, 100)})
+baseline_throuhgput_df = pd.read_csv('./graph_data/baseline_throughput.csv')
+tfcubic_thrpt = pd.read_csv('./graph_data/cubic_thrpt.csv')
+utf_thrpt = pd.read_csv('./graph_data/udp_prague_thrpt.csv')
 
 
-# Simulated throughput for example
-utf_thrpt = pd.DataFrame({"Time": time, "thrpt": np.random.uniform(40, 90, 100)})
-tfcubic_thrpt = pd.DataFrame({"Time": time, "thrpt": np.random.uniform(30, 100, 100)})
-
-# Step 2: Prepare dictionary for access
+# ---- Step 2: Bundle data for RTT and throughput ----
 rtt_paths = {
-    "Cubic": tfcubic,
-    "UDP-Prague": utf,
+    "Cubic": tfcubic_rtt,
+    "UDP-Prague": utf_rtt,
     "Baseline Propagation Delay": baseline_propagation_delay_df
 }
 
 thrpt_paths = {
     "Cubic": tfcubic_thrpt,
     "UDP-Prague": utf_thrpt,
+    "Baseline Throughput": baseline_throuhgput_df
 }
 
-# --- Step 3: Create figure ---
-plot = figure(x_axis_type="datetime", title="Smoothed RTT Over Time", height=400, width=700)
-plot.xaxis.axis_label = "Time"
-plot.yaxis.axis_label = "RTT (ms)"
+# ---- Step 3: Dash App ----
+app = dash.Dash(__name__)
+app.title = "RTT and Throughput Comparison"
 
-hover = HoverTool()
-hover.tooltips = [("Time", "@Time{%F %T}"), ("Value", "@y")]
-hover.formatters = {"@Time": "datetime"}
-plot.add_tools(hover)
+app.layout = html.Div([
+    html.H2("Impact of L4S in Starlink Network - Smoothed RTT and Throughput", style={"textAlign": "center"}),
 
-# --- Step 4: Setup dropdown and source ---
-metric_select = Select(title="Select Metric", value="RTT", options=["RTT", "THRPT"])
-data_sources = {}
-renderers = []
+    # html.Div([
+    #     html.Label("Select Metric to Compare:"),
+    #     dcc.Dropdown(
+    #         id="metric-type",
+    #         options=[
+    #             {"label": "Smoothed RTT", "value": "RTT"},
+    #             {"label": "Throughput", "value": "Throughput (Mbit/s)"},
+    #         ],
+    #         value="RTT",
+    #         clearable=False,
+    #         style={"width": "300px", "margin": "auto"}
+    #     )
+    # ], style={"textAlign": "center", "marginBottom": "20px"}),
 
-def update_plot(attr, old, new):
-    global renderers
-    # Remove previous renderers
-    for r in renderers:
-        plot.renderers.remove(r)
-    renderers.clear()
+    # Dropdown to select metric
+    dcc.Dropdown(
+        id='metric-type',
+        options=[
+            {'label': 'RTT', 'value': 'RTT'},
+            {'label': 'Throughput', 'value': 'Throughput (Mbit/s)'}
+        ],
+        value='RTT',
+        clearable=False,
+        style={'width': '300px', 'margin': 'auto'}
+    ),
 
-    metric = metric_select.value
-    data_dict = rtt_paths if metric == "RTT" else thrpt_paths
-    y_col = "SmoothedRTT" if metric == "RTT" else "thrpt"
-    ylabel = "RTT (ms)" if metric == "RTT" else "Throughput (Mbps)"
-    title = "Smoothed RTT Over Time" if metric == "RTT" else "Throughput Over Time"
+    dcc.Graph(id="comparison-graph"),
 
-    plot.yaxis.axis_label = ylabel
-    plot.title.text = title
+    html.H2("Starlink Satellite Scenario Visualization", style={"textAlign": "center", "marginTop": "10px"}),
 
-    color_cycle = iter(Category10[10])
-    legend_items = []
-
-    for name, df in data_dict.items():
-        color = next(color_cycle)
-        src = ColumnDataSource(data={
-            "Time": pd.to_datetime(df['Time'], unit='s'),
-            "y": df[y_col]
-        })
-        line = plot.line("Time", "y", source=src, line_width=2, color=color, legend_label=name)
-        renderers.append(line)
-
-    plot.legend.title = "Legend"
-    plot.legend.location = "top_center"
-
-# --- Initial load ---
-update_plot(None, None, None)
-
-# --- Link callback ---
-metric_select.on_change("value", update_plot)
-
-# --- Add the video demo ---
-from bokeh.models import Div
-
-video_html = """
-<div style="text-align: center; margin-top: 20px;">
-    <h2>Demo Video</h2>
-    <video width="640" height="360" controls>
-        <source src="input.mp4" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
-</div>
-"""
-
-video_div = Div(text=video_html)
+    html.Div([
+        html.Video(
+            controls=True,
+            src="/static/input.mp4",
+            style={"width": "854px", "height": "480px"}
+        )
+    ], style={"textAlign": "center", "marginTop": "10px"})
+])
 
 
-# --- Centering the plot and dropdown ---
-plot_layout = column(Spacer(height=60), plot, Spacer(height=60))
-dropdown_layout = column(Spacer(width=60,height=60), metric_select, Spacer(height=60))
-
-# --- Create a Div for center-aligned layout ---
-# Combine the dropdown, plot, and video
-content_column = column(dropdown_layout, plot_layout, video_div) # Add video_div here
-
-final_layout = row(
-    Spacer(width=400),  # Spacer to center the content horizontally
-    content_column
+# ---- Step 4: Callback ----
+@app.callback(
+    Output("comparison-graph", "figure"),
+    Input("metric-type", "value")
 )
+def update_comparison_graph(metric_type):
+    if metric_type == "RTT":
+        data_dict = rtt_paths
+        y_label = "SmoothedRTT"
+        title = "Smoothed RTT Over Time"
+    else:
+        data_dict = thrpt_paths
+        y_label = "Throughput (Mbit/s)"
+        title = "Throughput Over Time"
 
-# --- Add to document ---
-curdoc().add_root(final_layout)
-curdoc().title = "RTT and Throughput Comparison"
+    # Combine data into one DataFrame with "Variant" column
+    combined = pd.concat([
+        df[["Time", y_label]].assign(Variant=name)
+        for name, df in data_dict.items()
+    ])
+
+    fig = px.line(
+        combined,
+        x="Time",
+        y=y_label,
+        color="Variant",
+        title=title,
+        markers=True
+    )
+    fig.update_layout(xaxis_title="Time", yaxis_title=y_label.replace("Throughput (Mbit/s)", "Throughput (Mbps)").replace("SmoothedRTT", "RTT (ms)"))
+    return fig
+
+# ---- Step 5: Run ----
+if __name__ == "__main__":
+    app.run(debug=True)

@@ -68,7 +68,7 @@ app.title = "RTT, Throughput, and Packet Loss Comparison"
 #             html.H4("Starlink Satellite Scenario Visualization", style={"textAlign": "center"}),
 #             html.Video(
 #                 controls=True,
-#                 src="/static/starlink_viz.mp4",
+#                 src="/static/starlink_viz_with_no_label.mp4",
 #                 style={"width": "100%", "height": "auto"}
 #             )
 #         ], style={"width": "40%", "paddingLeft": "20px"})
@@ -152,7 +152,7 @@ app.layout = html.Div([
             }),
             html.Video(
                 controls=True,
-                src="/static/starlink_viz.mp4",
+                src="/static/starlink_viz_with_no_label.mp4",
                 style={"width": "100%", "height": "auto", "borderBottomLeftRadius": "8px", "borderBottomRightRadius": "8px"}
             )
         ], style={

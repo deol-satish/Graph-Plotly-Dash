@@ -65,7 +65,7 @@ app.layout = html.Div(
                 html.H4("Starlink Satellite Scenario Visualization", style={"textAlign": "center", "marginBottom": "10px"}),
                 html.Video(
                     controls=True,
-                    src="/static/starlink_viz.mp4",
+                    src="/static/starlink_viz_with_no_label.mp4",
                     style={"width": "100%", "height": "auto", "border": "1px solid #444"}
                 )
             ], style={"width": "40%", "paddingLeft": "20px"})
