@@ -130,13 +130,33 @@ app.layout = html.Div([
         ], style={**common_style, "width": "50%", "marginRight": "2%"}),
 
         html.Div([
-            html.Div("Starlink Constellation Simulation", style=header_style),
-            html.Video(
-                controls=True,
-                src="/static/starlink_viz_with_no_label.mp4",
-                style={"width": "100%", "height": "420px", "borderRadius": "8px"}
-            )
+    html.Div("Starlink Constellation Simulation", style=header_style),
+            # Container for image (left) and video (right)
+            html.Div([
+                html.Img(
+                    src="/static/LCN_Sat_Demo.png",   # put image in /static or /assets
+                    style={
+                        "width": "48%", 
+                        "height": "400px", 
+                        "borderRadius": "8px", 
+                        "objectFit": "contain",
+                        "marginRight": "2%"
+                    }
+                ),
+                html.Video(
+                    controls=True,
+                    src="/static/starlink_viz_with_no_label.mp4",
+                    style={
+                        "width": "50%", 
+                        "height": "400px", 
+                        "borderRadius": "8px", 
+                        "objectFit": "cover"
+                    }
+                )
+            ], style={"display": "flex", "justifyContent": "space-between"})
         ], style={**common_style, "width": "48%"})
+
+
     ], style={"display": "flex", "marginBottom": "30px"}),
 
     html.Div([  # Second Row: RTT + Packet Loss
